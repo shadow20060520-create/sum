@@ -1,0 +1,222 @@
+/*
+ * 全局样式 - 柔和通透风格
+ * 使用设计令牌: design-tokens/tokens.json
+ * 生成时间: 2026-03-21
+ */
+
+/* 导入设计令牌 */
+@import './styles/tokens.wxss';
+
+page {
+  /* 主色调 */
+  --primary-color: var(--color-primary-500);
+  --primary-light: var(--color-primary-400);
+  --primary-dark: var(--color-primary-600);
+  
+  /* 反馈色 */
+  --success-color: var(--color-success-500);
+  --error-color: var(--color-error-500);
+  
+  /* 背景与卡片 */
+  --bg-color: var(--color-neutral-50);
+  --card-bg: var(--color-glass-background);
+  
+  /* 文字颜色 */
+  --text-primary: var(--color-neutral-800);
+  --text-secondary: var(--color-neutral-500);
+  
+  /* 边框 */
+  --border-color: var(--color-glass-border);
+  
+  /* 阴影 */
+  --shadow-card: var(--shadow-card);
+  --shadow-glass: var(--shadow-glass);
+  
+  /* 间距 */
+  --spacing-xs: var(--spacing-xs);
+  --spacing-sm: var(--spacing-sm);
+  --spacing-md: var(--spacing-md);
+  --spacing-lg: var(--spacing-lg);
+  --spacing-xl: var(--spacing-xl);
+  
+  /* 圆角 */
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --radius-full: var(--radius-full);
+  
+  /* 字体 */
+  --font-xs: var(--font-size-xs);
+  --font-sm: var(--font-size-sm);
+  --font-base: var(--font-size-base);
+  --font-lg: var(--font-size-lg);
+  --font-xl: var(--font-size-xl);
+  --font-2xl: var(--font-size-2xl);
+  --font-3xl: var(--font-size-3xl);
+  
+  /* 毛玻璃效果 */
+  --blur-glass: var(--blur-glass);
+  
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+}
+
+/* ========== 玻璃态卡片 ========== */
+.glass-card {
+  background: var(--card-bg);
+  backdrop-filter: blur(var(--blur-glass));
+  -webkit-backdrop-filter: blur(var(--blur-glass));
+  border: 1rpx solid var(--border-color);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+}
+
+/* ========== 按钮组件 ========== */
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+  color: white;
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md) var(--spacing-xl);
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:active {
+  transform: scale(0.96);
+  opacity: 0.9;
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--text-primary);
+  border: 2rpx solid rgba(0, 0, 0, 0.08);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md) var(--spacing-xl);
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:active {
+  transform: scale(0.96);
+  background: rgba(255, 255, 255, 1);
+}
+
+/* ========== 输入框组件 ========== */
+.input-field {
+  background: rgba(255, 255, 255, 0.8);
+  border: 2rpx solid rgba(0, 0, 0, 0.06);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-size: var(--font-base);
+  transition: all 0.3s ease;
+}
+
+.input-field:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 4rpx rgba(59, 130, 246, 0.1);
+}
+
+/* ========== 动画 ========== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20rpx); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes slideInUp {
+  from { opacity: 0; transform: translateY(40rpx); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out;
+}
+
+.animate-pulse {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.animate-slide-up {
+  animation: slideInUp 0.5s ease-out;
+}
+
+/* ========== 录音按钮 ========== */
+.record-btn {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #ffffff, #f1f5f9);
+  box-shadow: 
+    0 0 12rpx rgba(0,0,0,0.03),
+    0 4rpx 12rpx rgba(0,0,0,0.08),
+    inset 6rpx 6rpx 1rpx -6rpx rgba(0,0,0,0.9),
+    inset -6rpx -6rpx 1rpx -6rpx rgba(0,0,0,0.85),
+    inset 2rpx 2rpx 2rpx -1rpx rgba(0,0,0,0.6),
+    inset -2rpx -2rpx 2rpx -1rpx rgba(0,0,0,0.6),
+    inset 0 0 12rpx 12rpx rgba(0,0,0,0.12),
+    inset 0 0 4rpx 4rpx rgba(0,0,0,0.06),
+    0 0 24rpx rgba(255,255,255,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.record-btn:active {
+  transform: scale(0.95);
+}
+
+.record-btn.recording {
+  background: linear-gradient(145deg, var(--primary-color), var(--primary-dark));
+  box-shadow: 
+    0 0 24rpx rgba(59, 130, 246, 0.4),
+    inset 0 0 20rpx rgba(255,255,255,0.2);
+}
+
+/* ========== 正确/错误标记 ========== */
+.word-correct {
+  color: var(--success-color);
+}
+
+.word-error {
+  color: var(--error-color);
+  border-bottom: 4rpx solid rgba(244, 63, 94, 0.3);
+}
+
+/* ========== 工具类 ========== */
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-success { color: var(--success-color); }
+.text-error { color: var(--error-color); }
+
+.bg-primary { background-color: var(--primary-color); }
+.bg-success { background-color: var(--success-color); }
+.bg-error { background-color: var(--error-color); }
+.bg-card { background-color: var(--card-bg); }
+
+.p-xs { padding: var(--spacing-xs); }
+.p-sm { padding: var(--spacing-sm); }
+.p-md { padding: var(--spacing-md); }
+.p-lg { padding: var(--spacing-lg); }
+.p-xl { padding: var(--spacing-xl); }
+
+.m-xs { margin: var(--spacing-xs); }
+.m-sm { margin: var(--spacing-sm); }
+.m-md { margin: var(--spacing-md); }
+.m-lg { margin: var(--spacing-lg); }
+.m-xl { margin: var(--spacing-xl); }
+
+.rounded-sm { border-radius: var(--radius-sm); }
+.rounded-md { border-radius: var(--radius-md); }
+.rounded-lg { border-radius: var(--radius-lg); }
+.rounded-xl { border-radius: var(--radius-xl); }
+.rounded-full { border-radius: var(--radius-full); }
+
+.shadow-card { box-shadow: var(--shadow-card); }
+.shadow-glass { box-shadow: var(--shadow-glass); }

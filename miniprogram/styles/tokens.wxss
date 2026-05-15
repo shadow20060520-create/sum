@@ -1,0 +1,75 @@
+/*
+ * 自动生成的设计令牌 - 微信小程序
+ * 源文件: design-tokens/tokens.json
+ * 生成时间: 2026-03-21
+ * 请勿手动修改此文件，请修改 tokens.json 后运行 npm run build
+ */
+
+page {
+  /* ========== Colors ========== */
+  /* Primary - 柔和晴空蓝 */
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-200: #bfdbfe;
+  --color-primary-300: #93c5fd;
+  --color-primary-400: #60a5fa;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+  
+  /* Success - 薄荷绿 */
+  --color-success-500: #10b981;
+  
+  /* Error - 珊瑚红 */
+  --color-error-500: #f43f5e;
+  
+  /* Neutral */
+  --color-neutral-50: #f8fafc;
+  --color-neutral-100: #f1f5f9;
+  --color-neutral-200: #e2e8f0;
+  --color-neutral-300: #cbd5e1;
+  --color-neutral-400: #94a3b8;
+  --color-neutral-500: #64748b;
+  --color-neutral-600: #475569;
+  --color-neutral-700: #334155;
+  --color-neutral-800: #1e293b;
+  --color-neutral-900: #0f172a;
+  --color-neutral-white: #ffffff;
+  
+  /* Glass - 玻璃态 */
+  --color-glass-background: rgba(255, 255, 255, 0.85);
+  --color-glass-border: rgba(255, 255, 255, 0.4);
+  --color-glass-shadow: rgba(0, 0, 0, 0.03);
+
+  /* ========== Spacing ========== */
+  --spacing-xs: 8rpx;
+  --spacing-sm: 16rpx;
+  --spacing-md: 32rpx;
+  --spacing-lg: 48rpx;
+  --spacing-xl: 64rpx;
+  --spacing-2xl: 96rpx;
+
+  /* ========== Border Radius ========== */
+  --radius-sm: 16rpx;
+  --radius-md: 24rpx;
+  --radius-lg: 32rpx;
+  --radius-xl: 48rpx;
+  --radius-full: 9999rpx;
+
+  /* ========== Shadows ========== */
+  --shadow-card: 0 16rpx 60rpx rgba(0, 0, 0, 0.04);
+  --shadow-glass: 0 0 12rpx rgba(0, 0, 0, 0.03), 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+  --shadow-elevated: 0 20rpx 80rpx rgba(0, 0, 0, 0.08);
+
+  /* ========== Typography ========== */
+  --font-size-xs: 12rpx;
+  --font-size-sm: 14rpx;
+  --font-size-base: 16rpx;
+  --font-size-lg: 18rpx;
+  --font-size-xl: 20rpx;
+  --font-size-2xl: 24rpx;
+  --font-size-3xl: 30rpx;
+
+  /* ========== Blur ========== */
+  --blur-glass: 20rpx;
+}

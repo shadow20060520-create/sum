@@ -1,0 +1,43 @@
+<view class="container">
+  <view class="header">
+    <text class="page-title">练习任务</text>
+    <text class="page-subtitle">选择任务开始发音练习</text>
+  </view>
+
+  <view class="task-list">
+    <view 
+      wx:for="{{tasks}}" 
+      wx:key="id"
+      class="task-card glass-card animate-fade-in"
+      style="animation-delay: {{index * 100}}ms"
+      bindtap="onTaskTap"
+      data-task-id="{{item.id}}"
+    >
+      <view class="task-header">
+        <text class="task-title">{{item.title}}</text>
+        <view class="due-date">
+          <text class="due-date-text">截止: {{item.dueDate}}</text>
+        </view>
+      </view>
+      
+      <text class="task-desc">{{item.description}}</text>
+      
+      <view class="progress-section">
+        <view class="progress-info">
+          <text class="progress-text">进度 {{item.completedSentences}}/{{item.totalSentences}}</text>
+          <text class="progress-percent">{{item.progress}}%</text>
+        </view>
+        <view class="progress-bar">
+          <view 
+            class="progress-fill" 
+            style="width: {{item.progress}}%"
+          ></view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{isLoading}}" class="loading">
+    <text>加载中...</text>
+  </view>
+</view>

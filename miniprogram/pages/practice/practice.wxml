@@ -1,0 +1,277 @@
+<!-- 练习页面 - 跨端重构版 (React UI 移植) -->
+<view class="container">
+  <!-- 加载状态 -->
+  <view wx:if="{{isLoading}}" class="loading-container">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">正在初始化...</text>
+  </view>
+
+  <!-- 错误提示 -->
+  <view wx:if="{{errorMessage}}" class="error-container">
+    <text class="error-text">{{errorMessage}}</text>
+    <button class="retry-btn" bindtap="initRecord">重试</button>
+  </view>
+
+  <!-- 主内容区 -->
+  <view wx:if="{{!isLoading && !errorMessage}}" class="main-content">
+
+
+    <!-- 顶部导航栏 (Tubelight 风格) -->
+    <view class="navbar-wrapper">
+      <view class="nav-bar">
+        <view class="nav-container">
+          <view 
+            wx:for="{{navItems}}" 
+            wx:key="name"
+            class="nav-item {{activeTab === item.name ? 'nav-active' : ''}}"
+            bindtap="onNavTabTap"
+            data-name="{{item.name}}"
+          >
+            <text class="nav-text">{{item.name}}</text>
+            <view wx:if="{{activeTab === item.name}}" class="nav-indicator">
+              <view class="indicator-light"></view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 核心展示区 -->
+    <view class="content-area">
+      <!-- 进度与提示 -->
+      <view class="progress-bar">
+        <text class="progress-text">今日任务 {{activeIndex + 1}}/{{tasks.length}}</text>
+        <view class="demo-audio" bindtap="onPlayStandardAudio">
+          <text class="audio-icon">🔊</text>
+          <text class="audio-text">示范读音</text>
+        </view>
+      </view>
+
+      <!-- 成绩浮层 -->
+      <view class="score-float" wx:if="{{isCompleted && tasks[activeIndex]}}">
+        <view class="score-main">
+          <text class="score-value">{{tasks[activeIndex].score}}</text>
+          <text class="score-unit">分</text>
+        </view>
+        <view class="score-divider"></view>
+        <view class="score-feedback">{{tasks[activeIndex].feedback}}</view>
+      </view>
+
+      <!-- 题目切换面板 -->
+      <view class="sentence-panel">
+        <view 
+          class="sentence-wrapper {{slideDirection === 'left' ? 'slide-left' : slideDirection === 'right' ? 'slide-right' : ''}}"
+          animation="{{slideAnimation}}"
+        >
+          <view class="sentence-content" wx:if="{{tasks[activeIndex]}}">
+            <block wx:for="{{tasks[activeIndex].words}}" wx:key="index">
+              <text 
+                class="word {{!isCompleted ? 'word-pending' : (item.status === 'error' ? 'word-error' : (item.status === 'correct' ? 'word-correct' : 'word-pending'))}}"
+                bindtap="handleWordClick"
+                data-word="{{item}}"
+                data-index="{{index}}"
+              >{{item.text}}</text>
+            </block>
+          </view>
+        </view>
+      </view>
+
+      <!-- 提示文字 -->
+      <view wx:if="{{isCompleted}}" class="hint-text">
+        <text>点击标红的汉字查看纠错详情</text>
+      </view>
+    </view>
+
+    <!-- 题目切换控制栏 -->
+    <view class="control-bar">
+      <view 
+        class="control-btn {{activeIndex === 0 ? 'disabled' : ''}}"
+        bindtap="handlePrev"
+      >
+        <text class="control-icon">‹</text>
+        <text class="control-text">上一题</text>
+      </view>
+
+      <!-- 进度指示器 -->
+      <view class="progress-dots">
+        <view 
+          wx:for="{{tasks}}" 
+          wx:key="id"
+          class="dot {{index === activeIndex ? 'dot-active' : ''}}"
+        ></view>
+      </view>
+
+      <view 
+        class="control-btn {{activeIndex === tasks.length - 1 ? 'disabled' : ''}}"
+        bindtap="handleNext"
+      >
+        <text class="control-text">下一题</text>
+        <text class="control-icon">›</text>
+      </view>
+    </view>
+
+    <!-- 底部录音按钮 (液态玻璃形态) -->
+    <view wx:if="{{!isCompleted && !isEvaluating}}" class="record-area">
+      <view class="record-container">
+        <view wx:if="{{isRecording}}" class="record-ripple"></view>
+        
+        <view 
+          class="record-btn {{isRecording ? 'active' : ''}}"
+          bindtouchstart="handleRecordStart"
+          bindtouchend="handleRecordStop"
+        >
+          <view class="record-btn-glass"></view>
+          <view class="record-btn-icon">
+            <text wx:if="{{!isRecording}}">🎤</text>
+            <text wx:if="{{isRecording}}">⏹</text>
+          </view>
+        </view>
+      </view>
+      
+      <text class="record-hint">{{isRecording ? '松开结束录音' : '按住开始录音'}}</text>
+    </view>
+
+    <!-- 评测结果展示 (完成后显示) -->
+    <view wx:if="{{isCompleted}}" class="result-card {{isSheetOpen ? 'result-card-dimmed' : ''}}">
+      <view class="score-circle">
+        <text class="score-value">{{totalScore}}</text>
+        <text class="score-label">总分</text>
+      </view>
+      
+      <view class="score-details">
+        <view class="score-item">
+          <text class="score-item-value correct">{{evaluationResult.fluency_score || 0}}</text>
+          <text class="score-item-label">流利度</text>
+        </view>
+        <view class="score-item">
+          <text class="score-item-value correct">{{evaluationResult.integrity_score || 0}}</text>
+          <text class="score-item-label">完整度</text>
+        </view>
+        <view class="score-item">
+          <text class="score-item-value {{evaluationResult.phone_score >= 70 ? 'correct' : 'error'}}">{{evaluationResult.phone_score || 0}}</text>
+          <text class="score-item-label">准确度</text>
+        </view>
+        <view class="score-item">
+          <text class="score-item-value {{evaluationResult.tone_score >= 70 ? 'correct' : 'error'}}">{{evaluationResult.tone_score || 0}}</text>
+          <text class="score-item-label">声调</text>
+        </view>
+      </view>
+
+      <!-- 完成后的操作按钮 -->
+      <view class="completed-actions">
+        <button class="action-btn secondary" bindtap="onRetry">重新练习</button>
+        <button class="action-btn primary" bindtap="onViewReport">查看详情</button>
+      </view>
+    </view>
+
+    <!-- 评测中提示 -->
+    <view wx:if="{{isEvaluating}}" class="evaluating-layer">
+      <view class="evaluating-hint">
+        <view class="evaluating-spinner"></view>
+        <text class="evaluating-text">正在评测中...</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ========================================================= -->
+  <!-- 专项纠错详情页 - 底部抽屉 (Bottom Sheet) -->
+  <!-- ========================================================= -->
+  
+  <!-- 黑色半透明遮罩 -->
+  <view 
+    class="sheet-overlay {{isSheetOpen ? 'overlay-visible' : ''}}"
+    bindtap="closeSheet"
+  ></view>
+
+  <!-- 抽屉面板 -->
+  <view class="bottom-sheet {{isSheetOpen ? 'sheet-open' : ''}}">
+    <!-- 拖动把手 -->
+    <view class="sheet-handle" bindtap="closeSheet">
+      <view class="handle-bar"></view>
+    </view>
+
+    <scroll-view class="sheet-content" scroll-y>
+      <block wx:if="{{selectedError}}">
+        <!-- 1. 标准发音区 -->
+        <view class="pronunciation-section">
+          <view class="pronunciation-main">
+            <text class="pronunciation-char">{{selectedError.text}}</text>
+            <view class="pronunciation-info">
+              <text class="pronunciation-pinyin">{{selectedError.pinyin}}</text>
+              <text class="pronunciation-tone">({{selectedError.tone}})</text>
+            </view>
+          </view>
+          <view class="play-btn" bindtap="playErrorAudio">
+            <text class="play-icon">▶</text>
+          </view>
+        </view>
+
+        <!-- 2. 国际音标对照区 -->
+        <view class="ipa-section">
+          <view class="ipa-compare">
+            <view class="ipa-column">
+              <text class="ipa-label">拼音</text>
+              <text class="ipa-value pinyin-value">{{selectedError.pinyin}}</text>
+            </view>
+            <view class="ipa-divider"></view>
+            <view class="ipa-column">
+              <text class="ipa-label">IPA</text>
+              <text class="ipa-value">{{selectedError.ipa}}</text>
+            </view>
+          </view>
+          <text class="ipa-hint">{{selectedError.ipaHint}}</text>
+        </view>
+
+        <!-- 3. 声调双曲线区 -->
+        <view class="tone-curve-section">
+          <text class="section-title">声调轨迹对比</text>
+          <view class="curve-chart">
+            <!-- 隐藏的 Canvas 用于绘制 -->
+            <canvas 
+              type="2d" 
+              id="toneCurve" 
+              class="curve-canvas hidden"
+              bindready="onCanvasReady"
+            ></canvas>
+            <!-- 显示转换后的图片 -->
+            <image 
+              wx:if="{{toneScoreImageUrl}}" 
+              src="{{toneScoreImageUrl}}" 
+              class="curve-image"
+              mode="aspectFit"
+            ></image>
+            <!-- 图片生成前的 loading 状态 -->
+            <view wx:else class="curve-loading">
+              <view class="loading-spinner"></view>
+            </view>
+            <!-- 图例 -->
+            <view class="curve-legend">
+              <view class="legend-item">
+                <view class="legend-line legend-standard"></view>
+                <text class="legend-text">标准音高</text>
+              </view>
+              <view class="legend-item">
+                <view class="legend-line legend-user"></view>
+                <text class="legend-text">你的发音</text>
+              </view>
+            </view>
+          </view>
+          <view class="diagnosis-text">
+            <text>诊断：{{selectedError.diagnosis}}</text>
+          </view>
+        </view>
+
+        <!-- 3. 发音指导视频区 -->
+        <view class="video-section">
+          <view class="video-placeholder" bindtap="playVideo">
+            <view class="video-bg"></view>
+            <view class="video-play">
+              <text class="video-play-icon">▶</text>
+            </view>
+            <text class="video-text">点击播放「{{selectedError.pinyin}}」口型示范视频</text>
+          </view>
+        </view>
+      </block>
+    </scroll-view>
+  </view>
+</view>

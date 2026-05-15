@@ -1,0 +1,17 @@
+{
+  "pages": [
+    "pages/practice/practice",
+    "pages/login/login",
+    "pages/task-list/task-list",
+    "pages/report/report"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#f8fafc",
+    "navigationBarTitleText": "汉语语音纠错",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#f8fafc"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

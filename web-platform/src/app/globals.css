@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 30, 41, 59;
+  --background-start-rgb: 248, 250, 252;
+  --background-end-rgb: 226, 232, 240;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}
+
+/* Glassmorphism 工具类 */
+.glass {
+  @apply bg-white/60 backdrop-blur-xl border border-white/40 shadow-sm;
+}
+
+.glass-strong {
+  @apply bg-white/85 backdrop-blur-2xl border border-white/50;
+}
+
+/* 动画过渡 */
+.transition-smooth {
+  @apply transition-all duration-300 ease-out;
+}
+
+/* 点击反馈 */
+.clickable {
+  @apply active:scale-95 transition-transform duration-150;
+}

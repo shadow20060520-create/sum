@@ -1,0 +1,465 @@
+import React, { useState } from 'react';
+import { 
+  LayoutDashboard, 
+  PenTool, 
+  Settings, 
+  LogOut, 
+  Search, 
+  Bell, 
+  User,
+  ChevronRight,
+  Play,
+  X,
+  FileText,
+  TrendingUp,
+  AlertCircle
+} from 'lucide-react';
+
+// --- 模拟后台数据 ---
+const CLASS_STATS = {
+  completionRate: "18 / 20",
+  avgScore: 82.5,
+  topErrors: ["去 (qù)", "天 (tiān)", "很 (hěn)"]
+};
+
+const STUDENTS_DATA = [
+  {
+    id: 1,
+    name: "大卫 (David)",
+    status: "已完成",
+    score: 85,
+    errorCount: 1,
+    sentence: [
+      { text: "我", status: "correct" },
+      { text: "们", status: "correct" },
+      { text: "一", status: "correct" },
+      { text: "起", status: "correct" },
+      { text: "去", status: "error", pinyin: "qù", diagnosis: "四声降不下去" },
+      { text: "长", status: "correct" },
+      { text: "城", status: "correct" }
+    ]
+  },
+  {
+    id: 2,
+    name: "安娜 (Anna)",
+    status: "已完成",
+    score: 72,
+    errorCount: 2,
+    sentence: [
+      { text: "今", status: "correct" },
+      { text: "天", status: "error", pinyin: "tiān", diagnosis: "发音位置靠后" },
+      { text: "气", status: "correct" },
+      { text: "真", status: "correct" },
+      { text: "不", status: "error", pinyin: "bú", diagnosis: "变调错误" },
+      { text: "错", status: "correct" }
+    ]
+  },
+  {
+    id: 3,
+    name: "迈克 (Mike)",
+    status: "已完成",
+    score: 95,
+    errorCount: 0,
+    sentence: [
+      { text: "中", status: "correct" },
+      { text: "文", status: "correct" },
+      { text: "很", status: "correct" },
+      { text: "有", status: "correct" },
+      { text: "意", status: "correct" },
+      { text: "思", status: "correct" }
+    ]
+  },
+  {
+    id: 4,
+    name: "莉莉 (Lily)",
+    status: "未完成",
+    score: "-",
+    errorCount: "-",
+    sentence: null
+  }
+];
+
+export default function TeacherDashboard() {
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  // 打开右侧抽屉
+  const openDrawer = (student) => {
+    setSelectedStudent(student);
+    setIsDrawerOpen(true);
+  };
+
+  // 关闭右侧抽屉
+  const closeDrawer = () => {
+    setIsDrawerOpen(false);
+    // 延迟清空数据，保证退场动画的连贯性
+    setTimeout(() => setSelectedStudent(null), 300);
+  };
+
+  return (
+    <div className="min-h-screen bg-[#f8fafc] flex font-sans overflow-hidden text-slate-800">
+      
+      {/* ========================================================= */}
+      {/* 左侧导航栏 (Sidebar) - 毛玻璃质感 */}
+      {/* ========================================================= */}
+      <aside className="w-64 bg-white/70 backdrop-blur-2xl border-r border-slate-200/60 flex flex-col shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-10 relative">
+        <div className="h-20 flex items-center px-8 border-b border-slate-100/50">
+          <div className="w-8 h-8 bg-blue-500 rounded-xl flex items-center justify-center mr-3 shadow-lg shadow-blue-500/20">
+            <span className="text-white font-bold text-lg">H</span>
+          </div>
+          <h1 className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-800 to-slate-500">
+            汉语纠错辅助
+          </h1>
+        </div>
+
+        <nav className="flex-1 px-4 py-8 space-y-2">
+          <button 
+            onClick={() => setActiveTab('dashboard')}
+            className={`w-full flex items-center px-4 py-3 rounded-xl transition-all duration-300 ${
+              activeTab === 'dashboard' 
+                ? 'bg-blue-50 text-blue-600 font-medium shadow-sm border border-blue-100/50' 
+                : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700'
+            }`}
+          >
+            <LayoutDashboard size={20} className="mr-3" />
+            学情看板
+          </button>
+          
+          <button 
+            onClick={() => setActiveTab('publish')}
+            className={`w-full flex items-center px-4 py-3 rounded-xl transition-all duration-300 ${
+              activeTab === 'publish' 
+                ? 'bg-blue-50 text-blue-600 font-medium shadow-sm border border-blue-100/50' 
+                : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700'
+            }`}
+          >
+            <PenTool size={20} className="mr-3" />
+            任务发布
+          </button>
+        </nav>
+
+        <div className="p-4 border-t border-slate-100/50">
+          <button className="w-full flex items-center px-4 py-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-700 transition-colors">
+            <LogOut size={20} className="mr-3" />
+            退出登录
+          </button>
+        </div>
+      </aside>
+
+      {/* ========================================================= */}
+      {/* 主内容区 (Main Content) */}
+      {/* ========================================================= */}
+      <main className="flex-1 flex flex-col h-screen overflow-hidden">
+        
+        {/* 顶部状态栏 */}
+        <header className="h-20 bg-white/40 backdrop-blur-md border-b border-slate-200/50 flex items-center justify-between px-10 z-0">
+          <div className="flex items-center text-sm text-slate-500">
+            <span>首页</span>
+            <ChevronRight size={14} className="mx-2 text-slate-300" />
+            <span className="font-medium text-slate-800">
+              {activeTab === 'dashboard' ? '初级一班 - 今日学情' : '发布新练习'}
+            </span>
+          </div>
+
+          <div className="flex items-center space-x-6">
+            <div className="relative">
+              <Search size={20} className="text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input 
+                type="text" 
+                placeholder="搜索学生姓名..." 
+                className="pl-10 pr-4 py-2 bg-white/50 border border-slate-200 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all w-64 placeholder:text-slate-400"
+              />
+            </div>
+            <button className="relative p-2 text-slate-400 hover:text-slate-600 transition-colors">
+              <Bell size={20} />
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full border border-white"></span>
+            </button>
+            <div className="flex items-center gap-3 pl-6 border-l border-slate-200">
+              <div className="w-9 h-9 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold">
+                W
+              </div>
+              <div className="text-sm font-medium">王老师</div>
+            </div>
+          </div>
+        </header>
+
+        {/* 核心内容容器 */}
+        <div className="flex-1 overflow-y-auto p-10">
+          
+          {activeTab === 'publish' && (
+            <div className="max-w-4xl bg-white rounded-3xl p-8 border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] animate-fade-in-up">
+              <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
+                <PenTool className="text-blue-500" /> 创建跟读练习任务
+              </h2>
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-slate-600 mb-2">练习文本内容</label>
+                  <textarea 
+                    className="w-full h-40 p-4 bg-slate-50 border border-slate-200 rounded-2xl resize-none focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all text-lg leading-relaxed"
+                    placeholder="请输入或粘贴今日的练习句子，按回车分隔不同的题目..."
+                    defaultValue="我们一起去长城\n今天天气真不错\n中文很有意思"
+                  ></textarea>
+                </div>
+                <div className="flex gap-6">
+                  <div className="flex-1">
+                    <label className="block text-sm font-medium text-slate-600 mb-2">下发班级</label>
+                    <select className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-slate-700 cursor-pointer">
+                      <option>留学生初级一班 (20人)</option>
+                      <option>留学生初级二班 (18人)</option>
+                    </select>
+                  </div>
+                  <div className="flex-1">
+                    <label className="block text-sm font-medium text-slate-600 mb-2">截止时间</label>
+                    <input type="date" className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-slate-700 cursor-pointer" />
+                  </div>
+                </div>
+                <div className="pt-4 flex justify-end">
+                  <button className="px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-xl shadow-lg shadow-blue-500/30 transition-all active:scale-95">
+                    发布任务
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'dashboard' && (
+            <div className="space-y-8 animate-fade-in-up">
+              
+              {/* 顶部概览指标卡片 */}
+              <div className="grid grid-cols-3 gap-6">
+                {/* 卡片 1 */}
+                <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex items-center justify-between group hover:-translate-y-1 transition-transform duration-300">
+                  <div>
+                    <p className="text-sm font-medium text-slate-400 mb-1">今日完成率</p>
+                    <h3 className="text-3xl font-bold text-slate-800">{CLASS_STATS.completionRate}</h3>
+                  </div>
+                  <div className="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-500 group-hover:scale-110 transition-transform">
+                    <FileText size={28} />
+                  </div>
+                </div>
+                
+                {/* 卡片 2 */}
+                <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex items-center justify-between group hover:-translate-y-1 transition-transform duration-300">
+                  <div>
+                    <p className="text-sm font-medium text-slate-400 mb-1">全班平均分</p>
+                    <div className="flex items-baseline gap-1">
+                      <h3 className="text-3xl font-bold text-slate-800">{CLASS_STATS.avgScore}</h3>
+                      <span className="text-sm text-slate-500">分</span>
+                    </div>
+                  </div>
+                  <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-500 group-hover:scale-110 transition-transform">
+                    <TrendingUp size={28} />
+                  </div>
+                </div>
+
+                {/* 卡片 3 */}
+                <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex items-center justify-between group hover:-translate-y-1 transition-transform duration-300">
+                  <div>
+                    <p className="text-sm font-medium text-slate-400 mb-2">高频易错字</p>
+                    <div className="flex gap-2">
+                      {CLASS_STATS.topErrors.map((err, idx) => (
+                        <span key={idx} className="px-3 py-1 bg-rose-50 text-rose-600 text-xs font-semibold rounded-lg border border-rose-100">
+                          {err}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="w-14 h-14 bg-rose-50 rounded-2xl flex items-center justify-center text-rose-500 group-hover:scale-110 transition-transform">
+                    <AlertCircle size={28} />
+                  </div>
+                </div>
+              </div>
+
+              {/* 明细数据表格 */}
+              <div className="bg-white rounded-3xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
+                <div className="px-8 py-6 border-b border-slate-100 flex justify-between items-center">
+                  <h2 className="text-lg font-bold">学生练习明细</h2>
+                  <button className="text-sm text-blue-600 font-medium hover:text-blue-700">导出报表</button>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="bg-slate-50/50">
+                        <th className="px-8 py-4 text-sm font-semibold text-slate-500 border-b border-slate-100 w-1/4">学生姓名</th>
+                        <th className="px-8 py-4 text-sm font-semibold text-slate-500 border-b border-slate-100 w-1/5">状态</th>
+                        <th className="px-8 py-4 text-sm font-semibold text-slate-500 border-b border-slate-100 w-1/5">综合得分</th>
+                        <th className="px-8 py-4 text-sm font-semibold text-slate-500 border-b border-slate-100 w-1/5">错字数量</th>
+                        <th className="px-8 py-4 text-sm font-semibold text-slate-500 border-b border-slate-100 text-right">操作</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {STUDENTS_DATA.map((student) => (
+                        <tr 
+                          key={student.id} 
+                          className="group hover:bg-blue-50/30 transition-colors border-b border-slate-50 last:border-none"
+                        >
+                          <td className="px-8 py-5">
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 text-xs font-bold">
+                                {student.name.charAt(0)}
+                              </div>
+                              <span className="font-medium text-slate-700">{student.name}</span>
+                            </div>
+                          </td>
+                          <td className="px-8 py-5">
+                            <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
+                              student.status === '已完成' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-500'
+                            }`}>
+                              {student.status === '已完成' && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span>}
+                              {student.status}
+                            </span>
+                          </td>
+                          <td className="px-8 py-5 font-bold text-slate-700">
+                            {student.score}
+                          </td>
+                          <td className="px-8 py-5">
+                            {student.errorCount > 0 ? (
+                              <span className="text-rose-500 font-bold bg-rose-50 px-2 py-1 rounded-md">{student.errorCount} 个</span>
+                            ) : student.errorCount === 0 ? (
+                              <span className="text-slate-400">无</span>
+                            ) : (
+                              <span className="text-slate-300">-</span>
+                            )}
+                          </td>
+                          <td className="px-8 py-5 text-right">
+                            <button 
+                              onClick={() => student.status === '已完成' ? openDrawer(student) : null}
+                              disabled={student.status !== '已完成'}
+                              className={`text-sm font-medium transition-colors ${
+                                student.status === '已完成' 
+                                  ? 'text-blue-600 hover:text-blue-800 hover:underline underline-offset-4' 
+                                  : 'text-slate-300 cursor-not-allowed'
+                              }`}
+                            >
+                              查看详情
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+
+        </div>
+      </main>
+
+      {/* ========================================================= */}
+      {/* 右侧侧滑抽屉 (Side Drawer) - 查看学生详情 */}
+      {/* ========================================================= */}
+      
+      {/* 黑色半透明遮罩 */}
+      <div 
+        className={`fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-40 transition-opacity duration-300 ${
+          isDrawerOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
+        onClick={closeDrawer}
+      ></div>
+
+      {/* 侧滑面板 */}
+      <div 
+        className={`fixed top-0 right-0 h-full w-[480px] bg-white/90 backdrop-blur-2xl shadow-[-10px_0_40px_rgba(0,0,0,0.1)] z-50 transform transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] flex flex-col ${
+          isDrawerOpen ? 'translate-x-0' : 'translate-x-full'
+        }`}
+      >
+        {selectedStudent && (
+          <>
+            {/* 抽屉头部 */}
+            <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between">
+              <div>
+                <h3 className="text-xl font-bold text-slate-800">{selectedStudent.name} 的练习详情</h3>
+                <p className="text-sm text-slate-500 mt-1">提交时间: 2023-10-27 14:30</p>
+              </div>
+              <button 
+                onClick={closeDrawer}
+                className="w-10 h-10 rounded-full bg-slate-50 text-slate-500 flex items-center justify-center hover:bg-slate-100 hover:text-slate-800 transition-colors"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* 抽屉内容区 */}
+            <div className="flex-1 overflow-y-auto px-8 py-6">
+              
+              {/* 得分与播放器卡片 */}
+              <div className="bg-slate-50 rounded-2xl p-6 mb-8 border border-slate-100 flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-slate-500 mb-1">系统评分</p>
+                  <div className="text-4xl font-bold text-blue-500">{selectedStudent.score}<span className="text-lg text-blue-400 ml-1">分</span></div>
+                </div>
+                
+                {/* 模拟音频播放器 */}
+                <div className="flex items-center gap-4 bg-white px-4 py-3 rounded-xl shadow-sm border border-slate-100 cursor-pointer hover:border-blue-200 transition-colors">
+                  <div className="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center shadow-md shadow-blue-500/20">
+                    <Play size={18} className="ml-1" />
+                  </div>
+                  <div className="flex flex-col gap-1.5 w-32">
+                    <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                      <div className="h-full bg-blue-500 w-1/3 rounded-full"></div>
+                    </div>
+                    <div className="flex justify-between text-[10px] text-slate-400 font-medium">
+                      <span>0:03</span>
+                      <span>0:09</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 逐字纠错还原区 */}
+              <div>
+                <h4 className="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
+                  <FileText size={16} className="text-slate-400" /> 朗读明细还原
+                </h4>
+                
+                <div className="bg-white rounded-2xl p-8 border border-slate-100 shadow-sm">
+                  {/* 模拟句子的渲染 */}
+                  <div className="flex flex-wrap gap-x-3 gap-y-6 text-3xl font-medium tracking-widest leading-relaxed">
+                    {selectedStudent.sentence.map((word, idx) => (
+                      <div key={idx} className="relative group cursor-default">
+                        <span className={word.status === 'correct' ? 'text-slate-700' : 'text-rose-500 border-b-2 border-rose-300 pb-1'}>
+                          {word.text}
+                        </span>
+                        
+                        {/* 悬浮提示错因 (Tooltip) */}
+                        {word.status === 'error' && (
+                          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max max-w-[160px] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                            <div className="bg-slate-800 text-white text-xs px-3 py-2 rounded-lg shadow-xl relative">
+                              <span className="font-bold text-rose-300 mr-1">{word.pinyin}</span>
+                              {word.diagnosis}
+                              {/* 气泡小箭头 */}
+                              <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-800"></div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  
+                  {/* 诊断小结 */}
+                  {selectedStudent.errorCount > 0 && (
+                    <div className="mt-8 pt-6 border-t border-slate-100">
+                      <div className="flex items-start gap-3 bg-rose-50/50 p-4 rounded-xl text-sm">
+                        <AlertCircle size={18} className="text-rose-500 shrink-0 mt-0.5" />
+                        <div>
+                          <p className="font-semibold text-rose-700 mb-1">AI 诊断小结</p>
+                          <p className="text-rose-600/80 leading-relaxed">
+                            该生在四声（去）和鼻音（天）的发音上存在明显缺陷，建议在课堂上针对性纠正其口腔打开度。
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+
+    </div>
+  );
+}

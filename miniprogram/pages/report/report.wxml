@@ -1,0 +1,158 @@
+<!-- 评测详情报告页 -->
+<view class="container">
+  <!-- 加载状态 -->
+  <view wx:if="{{isLoading}}" class="loading-container">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">正在加载报告...</text>
+  </view>
+
+  <!-- 错误提示 -->
+  <view wx:if="{{errorMessage}}" class="error-container">
+    <text class="error-text">{{errorMessage}}</text>
+    <button class="retry-btn" bindtap="onRetryLoad">重试</button>
+  </view>
+
+  <!-- 主内容区 -->
+  <view wx:if="{{!isLoading && !errorMessage}}" class="main-content">
+    <!-- 顶部导航 -->
+    <view class="nav-bar">
+      <view class="back-btn" bindtap="onBackToPractice">
+        <text class="back-icon">←</text>
+      </view>
+      <text class="page-title">评测报告</text>
+      <view class="placeholder"></view>
+    </view>
+
+    <!-- 总分卡片 -->
+    <view class="score-overview-card">
+      <view class="total-score-section">
+        <view class="score-circle {{getScoreClass(totalScore)}}">
+          <text class="score-value">{{totalScore}}</text>
+          <text class="score-label">总分</text>
+        </view>
+        <view class="score-feedback">
+          <text wx:if="{{totalScore >= 90}}" class="feedback-text excellent">太棒了！发音非常标准</text>
+          <text wx:elif="{{totalScore >= 80}}" class="feedback-text good">很好！继续加油</text>
+          <text wx:elif="{{totalScore >= 70}}" class="feedback-text pass">及格了，还有提升空间</text>
+          <text wx:else class="feedback-text fail">需要多加练习哦</text>
+        </view>
+      </view>
+
+      <!-- 四项分数 -->
+      <view class="score-details">
+        <view class="score-item">
+          <text class="score-item-value {{getScoreClass(fluencyScore)}}">{{fluencyScore}}</text>
+          <text class="score-item-label">流利度</text>
+        </view>
+        <view class="score-item">
+          <text class="score-item-value {{getScoreClass(integrityScore)}}">{{integrityScore}}</text>
+          <text class="score-item-label">完整度</text>
+        </view>
+        <view class="score-item">
+          <text class="score-item-value {{getScoreClass(phoneScore)}}">{{phoneScore}}</text>
+          <text class="score-item-label">准确度</text>
+        </view>
+        <view class="score-item">
+          <text class="score-item-value {{getScoreClass(toneScore)}}">{{toneScore}}</text>
+          <text class="score-item-label">声调</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 逐字评测结果 -->
+    <view class="words-card">
+      <view class="card-header">
+        <text class="card-title">逐字分析</text>
+        <view class="legend">
+          <view class="legend-item">
+            <view class="legend-dot correct"></view>
+            <text class="legend-text">正确</text>
+          </view>
+          <view class="legend-item">
+            <view class="legend-dot error"></view>
+            <text class="legend-text">待改进</text>
+          </view>
+        </view>
+      </view>
+      
+      <view class="words-list">
+        <view 
+          wx:for="{{wordResults}}" 
+          wx:key="index"
+          class="word-item {{getWordClass(item)}}"
+        >
+          <text class="word-char">{{item.content}}</text>
+          <text class="word-score">{{item.total_score}}分</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 舌位教学视频 -->
+    <view wx:if="{{recommendedVideos.length > 0}}" class="video-card">
+      <view class="card-header">
+        <text class="card-title">发音指导</text>
+        <text class="card-subtitle">根据你的发音错误推荐</text>
+      </view>
+
+      <!-- 视频播放器 -->
+      <view class="video-player-container">
+        <video
+          wx:if="{{currentVideoUrl}}"
+          class="video-player"
+          src="{{currentVideoUrl}}"
+          controls
+          autoplay
+          show-center-play-btn
+          show-play-btn
+          object-fit="contain"
+          binderror="onVideoError"
+        ></video>
+        <view wx:else class="video-placeholder">
+          <text class="placeholder-text">视频加载中...</text>
+        </view>
+      </view>
+
+      <!-- 视频信息 -->
+      <view wx:if="{{recommendedVideos[currentVideoIndex]}}" class="video-info">
+        <view class="video-phoneme">
+          <text class="phoneme-label">拼音：</text>
+          <text class="phoneme-value">{{recommendedVideos[currentVideoIndex].phoneme}}</text>
+        </view>
+        <view class="video-description">
+          <text>{{recommendedVideos[currentVideoIndex].description}}</text>
+        </view>
+      </view>
+
+      <!-- 视频切换标签 -->
+      <view wx:if="{{recommendedVideos.length > 1}}" class="video-tabs">
+        <view 
+          wx:for="{{recommendedVideos}}"
+          wx:key="index"
+          class="video-tab {{currentVideoIndex === index ? 'active' : ''}}"
+          bindtap="onSwitchVideo"
+          data-index="{{index}}"
+        >
+          <text class="tab-text">{{item.phoneme}}</text>
+          <text class="tab-word">({{item.word}})</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 音高曲线（预留） -->
+    <view class="pitch-card">
+      <view class="card-header">
+        <text class="card-title">音高曲线</text>
+        <text class="card-subtitle">标准发音 vs 你的发音</text>
+      </view>
+      <view class="pitch-chart-placeholder">
+        <text class="placeholder-text">音高曲线功能开发中...</text>
+      </view>
+    </view>
+
+    <!-- 底部操作 -->
+    <view class="action-area">
+      <button class="action-btn secondary" bindtap="onRetry">重新练习</button>
+      <button class="action-btn primary" bindtap="onBackToPractice">完成</button>
+    </view>
+  </view>
+</view>

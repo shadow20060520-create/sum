@@ -1,0 +1,18 @@
+{
+  "name": "@hanyu/supabase",
+  "version": "1.0.0",
+  "description": "汉语教学语音纠错辅助工具 - Supabase 配置与类型生成",
+  "scripts": {
+    "db:start": "supabase start",
+    "db:stop": "supabase stop",
+    "db:reset": "supabase db reset",
+    "db:migrate": "supabase migration up",
+    "db:seed": "supabase seed",
+    "types:gen": "supabase gen types typescript --project-id $SUPABASE_PROJECT_ID --schema public > types/database.ts",
+    "types:local": "supabase gen types typescript --local > types/database.ts",
+    "lint": "supabase db lint"
+  },
+  "devDependencies": {
+    "supabase": "^1.145.4"
+  }
+}

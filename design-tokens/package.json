@@ -1,0 +1,20 @@
+{
+  "name": "@hanyu/design-tokens",
+  "version": "1.0.0",
+  "description": "汉语教学语音纠错辅助工具 - 共享设计令牌",
+  "main": "dist/tokens.css",
+  "scripts": {
+    "build": "node build.js",
+    "watch": "node build.js && node -e \"require('fs').watchFile('./tokens.json', () => require('child_process').execSync('node build.js', {stdio: 'inherit'}))\""
+  },
+  "files": [
+    "dist/",
+    "tokens.json",
+    "build.js"
+  ],
+  "keywords": [
+    "design-tokens",
+    "chinese-learning",
+    "glassmorphism"
+  ]
+}
